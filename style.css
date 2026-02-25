@@ -1,0 +1,546 @@
+:root {
+    --primary-color: #e10600;
+    --primary-glow: rgba(225, 6, 0, 0.4);
+    --bg-dark: #0a0a0c;
+    --card-bg: rgba(26, 26, 30, 0.7);
+    --card-hover: rgba(40, 40, 45, 0.9);
+    --text-main: #ffffff;
+    --text-dim: #a0a0a8;
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --accent-blue: #00d2ff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-main);
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+    background-image:
+        radial-gradient(circle at 10% 10%, rgba(225, 6, 0, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 90%, rgba(0, 210, 255, 0.05) 0%, transparent 40%);
+    background-attachment: fixed;
+}
+
+/* Header & Nav */
+header {
+    padding: 40px 20px;
+    text-align: center;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.5), transparent);
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #fff 0%, #a0a0a8 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.series-nav {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.nav-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-dim);
+    padding: 12px 30px;
+    border-radius: 50px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    backdrop-filter: blur(10px);
+}
+
+.nav-btn:hover {
+    background: var(--card-hover);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.nav-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px var(--primary-glow);
+}
+
+/* Countdown */
+.countdown-section {
+    max-width: 800px;
+    margin: 0 auto 60px;
+    padding: 30px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 30px;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(20px);
+    text-align: center;
+}
+
+.countdown-timer {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.time-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 80px;
+}
+
+.time-unit span:first-child {
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    color: var(--primary-color);
+    text-shadow: 0 0 15px var(--primary-glow);
+}
+
+.time-unit .label {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+/* Control Tabs */
+.controls {
+    max-width: 1200px;
+    margin: 0 auto 30px;
+    padding: 0 20px;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.03);
+    padding: 6px;
+    border-radius: 12px;
+    width: fit-content;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 8px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.tab-btn.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+/* Race List & Cards */
+.race-list {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.race-card {
+    background: var(--card-bg);
+    border-radius: 24px;
+    border: 1px solid var(--glass-border);
+    padding: 30px;
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 40px;
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(15px);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.race-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: var(--primary-color);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.race-card:hover {
+    background: var(--card-hover);
+    transform: translateX(10px) scale(1.01);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+}
+
+.race-card:hover::before {
+    opacity: 1;
+}
+
+/* Race Header Internal Struct */
+.race-header-row {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.flag-container {
+    width: 60px;
+    flex-shrink: 0;
+}
+
+.flag-img {
+    width: 100%;
+    height: auto;
+    border-radius: 6px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: block;
+}
+
+.race-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 4px;
+}
+
+.race-card h3 {
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.track-badge {
+    font-size: 0.6rem;
+    padding: 2px 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    color: var(--accent-blue);
+}
+
+.track-full-name {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    font-weight: 500;
+    margin-bottom: 20px;
+}
+
+.race-meta-row {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.meta-item {
+    font-size: 0.9rem;
+    color: var(--text-dim);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.meta-item .icon {
+    font-size: 1.1rem;
+}
+
+/* Sessions Grid */
+.sessions-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 15px;
+}
+
+.session-item {
+    background: rgba(255, 255, 255, 0.03);
+    padding: 12px 15px;
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 85px;
+    transition: all 0.3s;
+}
+
+.session-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    transform: translateY(-3px);
+}
+
+.session-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.session-name {
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.session-date {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    font-weight: 700;
+    font-style: italic;
+}
+
+.session-time {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: white;
+}
+
+.session-item.important {
+    border-color: rgba(225, 6, 0, 0.3);
+    background: linear-gradient(135deg, rgba(225, 6, 0, 0.15), rgba(225, 6, 0, 0.05));
+    box-shadow: inset 0 0 10px rgba(225, 6, 0, 0.1);
+}
+
+.session-item.important .session-name {
+    color: var(--primary-color);
+}
+
+.session-item.important .session-time {
+    color: white;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.animate-in {
+    animation: fadeInUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+    .race-card {
+        grid-template-columns: 1fr;
+        padding: 25px;
+    }
+
+    .countdown-timer {
+        gap: 10px;
+    }
+
+    .time-unit {
+        min-width: 60px;
+    }
+
+    .time-unit span:first-child {
+        font-size: 1.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    h1 {
+        font-size: 1.8rem;
+    }
+
+    .sessions-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+
+::-webkit-scrollbar-thumb {
+    background: #333;
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #444;
+}
+
+/* Modal Overlay */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.modal-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.modal-content {
+    width: 95%;
+    max-width: 550px;
+    padding: 40px;
+    position: relative;
+    transform: scale(0.9);
+    transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+    border-radius: 32px;
+}
+
+.modal-overlay.active .modal-content {
+    transform: scale(1);
+}
+
+.close-modal {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    background: none;
+    border: none;
+    color: white;
+    font-size: 2.2rem;
+    cursor: pointer;
+    line-height: 1;
+    opacity: 0.5;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.close-modal:hover {
+    opacity: 1;
+    transform: rotate(90deg) scale(1.1);
+}
+
+/* Modal Internal Layout */
+.track-detail-header {
+    margin-bottom: 25px;
+    text-align: left;
+}
+
+.track-detail-header h2 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    margin-bottom: 5px;
+    line-height: 1.1;
+    letter-spacing: -1px;
+}
+
+.track-detail-header .location {
+    color: var(--text-dim);
+    font-weight: 500;
+    font-size: 1.1rem;
+}
+
+.track-stats-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-box {
+    background: rgba(255, 255, 255, 0.04);
+    padding: 20px;
+    border-radius: 20px;
+    border: 1px solid var(--glass-border);
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    margin-bottom: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 700;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: white;
+}
+
+.track-img-placeholder {
+    width: 100%;
+    height: 200px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px dashed var(--glass-border);
+    color: var(--text-dim);
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.track-map-container {
+    width: 100%;
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.02);
+    border-radius: 20px;
+    padding: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--glass-border);
+}
+
+.track-map-img {
+    max-width: 100%;
+    max-height: 280px;
+    height: auto;
+    /* 將 Wikipedia 的黑色線條 SVG 轉為白色，並增加發光感 */
+    filter: invert(1) brightness(2) drop-shadow(0 0 12px rgba(255, 255, 255, 0.3));
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.track-map-img:hover {
+    transform: scale(1.08) rotate(1deg);
+    filter: invert(1) brightness(2.5) drop-shadow(0 0 18px var(--accent-blue));
+}

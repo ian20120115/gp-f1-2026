@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GP MASTER 2026 | MotoGP & F1 專業賽程</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <header>
+        <h1>GP MASTER 2026</h1>
+        <nav class="series-nav">
+            <button class="nav-btn" data-series="motogp">MOTOGP</button>
+            <button class="nav-btn" data-series="f1">FORMULA 1</button>
+        </nav>
+    </header>
+
+    <main>
+        <section class="countdown-section">
+            <div id="next-race-name">正在搜尋下一場熱血賽事...</div>
+            <div id="countdown-timer" class="countdown-timer">
+                <div class="time-unit">
+                    <span id="days">00</span>
+                    <span class="label">DAYS</span>
+                </div>
+                <div class="time-unit">
+                    <span id="hours">00</span>
+                    <span class="label">HOURS</span>
+                </div>
+                <div class="time-unit">
+                    <span id="minutes">00</span>
+                    <span class="label">MINS</span>
+                </div>
+                <div class="time-unit">
+                    <span id="seconds">00</span>
+                    <span class="label">SECS</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="controls">
+            <div class="tabs">
+                <button class="tab-btn active" data-filter="all">全部</button>
+                <button class="tab-btn" data-filter="upcoming">即將到來</button>
+                <button class="tab-btn" data-filter="past">歷史紀錄</button>
+            </div>
+        </div>
+
+        <div id="race-list" class="race-list">
+            <div class="loader">正在暖胎中...</div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 GP MASTER. 賽程僅供參考，請以官方公告為準。</p>
+    </footer>
+
+    <!-- Track Detail Modal -->
+    <div id="track-modal" class="modal-overlay">
+        <div class="modal-content glass-card">
+            <button class="close-modal">&times;</button>
+            <div id="modal-body">
+                <!-- 由 JS 動態填充內容 -->
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
