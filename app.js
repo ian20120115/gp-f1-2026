@@ -331,23 +331,25 @@ function renderSchedule(shouldScroll = false) {
         const flagUrl = `https://flagcdn.com/w160/${r.c}.png`;
 
         div.innerHTML = `
-            <div class="race-header-row">
-                <div class="flag-container">
-                    <img src="${flagUrl}" alt="${r.n}" class="flag-img">
-                </div>
-                <div class="race-main-info">
-                    <div class="race-title-group">
-                        <h3>${r.n}大獎賽</h3>
-                        <span class="track-badge">TRACK</span>
+            <div class="race-info-main">
+                <div class="race-header-row">
+                    <div class="flag-container">
+                        <img src="${flagUrl}" alt="${r.n}" class="flag-img">
                     </div>
-                    <div class="track-full-name">${r.track}</div>
+                    <div class="race-main-info">
+                        <div class="race-title-group">
+                            <h3>${r.n}大獎賽</h3>
+                            <span class="track-badge">TRACK</span>
+                        </div>
+                        <div class="track-full-name">${r.track}</div>
+                    </div>
                 </div>
+                <div class="race-meta-row">
+                    <div class="meta-item"><span class="icon">📅</span> ${r.d}</div>
+                    <div class="meta-item"><span class="icon">📍</span> ${r.l}</div>
+                </div>
+                ${r.tags ? `<div class="track-tags">${r.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
             </div>
-            <div class="race-meta-row">
-                <div class="meta-item"><span class="icon">📅</span> ${r.d}</div>
-                <div class="meta-item"><span class="icon">📍</span> ${r.l}</div>
-            </div>
-            ${r.tags ? `<div class="track-tags">${r.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}</div>` : ''}
             <div class="sessions-grid">${sHtml}</div>
         `;
         list.appendChild(div);
