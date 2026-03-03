@@ -326,8 +326,11 @@ function updateNextRaceCountdown() {
     const now = new Date();
     let nr = data.find(r => { const rd = new Date(r.d); rd.setDate(rd.getDate() + 2); return rd > now; });
     if (!nr) { document.getElementById('next-race-name').innerText = "賽季已結束"; document.getElementById('countdown-timer').style.display = 'none'; return; }
-    document.getElementById('countdown-timer').style.display = 'flex'; document.getElementById('next-race-name').innerText = nr.n + "大獎賽";
-    const rt = nr.t[nr.t.length - 1]; const td = new Date(nr.d + 'T' + rt + ':00+08:00'); td.setDate(td.getDate() + nr.o[nr.o.length - 1]);
+    document.getElementById('countdown-timer').style.display = 'flex';
+    document.getElementById('next-race-name').innerText = nr.n + "大獎賽 - 週末開幕";
+    const rt = nr.t[0]; // 使用第一場練習賽 (FP1)
+    const td = new Date(nr.d + 'T' + rt + ':00+08:00');
+    td.setDate(td.getDate() + nr.o[0]); // 使用第一場練習賽的偏移
     function update() {
         const diff = td - new Date();
         if (diff <= 0) { document.getElementById('countdown-timer').innerHTML = "比賽正式開始！"; clearInterval(timerInterval); return; }
