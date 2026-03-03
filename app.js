@@ -5,10 +5,13 @@
 };
 
 const MOTOGP_SESSIONS = ["FP1", "Practice", "FP2", "Q1", "Q2", "Sprint", "Race"];
+const MOTO2_SESSIONS = ["FP1", "Practice", "FP2", "Q1", "Q2", "Race"];
+const MOTO3_SESSIONS = ["FP1", "Practice", "FP2", "Q1", "Q2", "Race"];
 const F1_SESSIONS = ["FP1", "FP2", "FP3", "Qualy", "Race"];
 const F1_SPRINT_SESSIONS = ["FP1", "Sprint Qualy", "Sprint", "Qualy", "Race"];
 
 const M_OFF = [0, 0, 1, 1, 1, 1, 2];
+const M23_OFF = [0, 0, 1, 1, 1, 2]; // Moto2/3 match MotoGP's day offsets except no Sprint
 const F_OFF = [0, 0, 1, 1, 2];
 const FS_OFF = [0, 0, 1, 1, 2];
 
@@ -48,6 +51,45 @@ const MOTOGP_SCHEDULE = [
     { n: '馬來西亞', l: 'Sepang', c: 'my', d: '2026-10-30', t: ['10:45', '15:00', '10:10', '10:50', '11:15', '15:00', '15:00'], o: M_OFF, track: 'Petronas Sepang International Circuit', stats: { len: '5.54 km', turns: 15, rec: '1:56.337 (Francesco Bagnaia, 2024)', map: 'https://upload.wikimedia.org/wikipedia/commons/d/da/Sepang.svg' } },
     { n: '巴倫西亞', l: 'Valencia', c: 'es', d: '2026-11-13', t: ['16:45', '21:00', '16:10', '16:50', '17:15', '21:00', '20:00'], o: M_OFF, track: 'Circuit Ricardo Tormo', stats: { len: '4.01 km', turns: 14, rec: '1:28.809 (Marco Bezzecchi, 2025)', map: 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Valencia_circuit.svg' } }
 ];
+
+// 動態生成 Moto2 與 Moto3 賽程 (基於 MotoGP 時間進行偏移)
+function generateSubSeries(base, type) {
+    const offsetMin = type === 'moto2' ? -105 : -210; // Moto2 通常早 1:45，Moto3 早 3:30
+    const records = {
+        moto2: {
+            '泰國': '1:34.591 (Manuel Gonzalez, 2024)',
+            '美國': '2:08.359 (Fermin Aldeguer, 2024)',
+            '卡達': '1:56.520 (Manuel Gonzalez, 2025)',
+            '奧地利': '1:32.845 (Manuel Gonzalez, 2025)',
+            '馬來西亞': '2:02.858 (Daniel Holgado, 2025)',
+            '巴倫西亞': '1:33.061 (Alonso Lopez, 2024)'
+        },
+        moto3: {
+            '泰國': '1:40.088 (David Almansa, 2026)',
+            '卡達': '2:02.276 (Daniel Holgado, 2024)',
+            '日本': '1:54.761 (Ivan Ortola, 2024)',
+            '巴倫西亞': 'Qualifying Record (Adrian Fernandez, 2025)'
+        }
+    };
+
+    return base.map(r => {
+        const newTimes = r.t.map(time => {
+            if (!time) return time;
+            const [h, m] = time.split(':').map(Number);
+            let totalMin = h * 60 + m + offsetMin;
+            if (totalMin < 0) totalMin += 1440;
+            return `${String(Math.floor(totalMin / 60) % 24).padStart(2, '0')}:${String(totalMin % 60).padStart(2, '0')}`;
+        });
+        const filteredTimes = [...newTimes];
+        filteredTimes.splice(5, 1); // 移除 Sprint
+
+        const subRec = (records[type] && records[type][r.n]) || 'Qualifying Record TBD';
+        return { ...r, t: filteredTimes, o: M23_OFF, stats: { ...r.stats, rec: subRec } };
+    });
+}
+
+const MOTO2_SCHEDULE = generateSubSeries(MOTOGP_SCHEDULE, 'moto2');
+const MOTO3_SCHEDULE = generateSubSeries(MOTOGP_SCHEDULE, 'moto3');
 
 const F1_SCHEDULE = [
     { n: '澳洲', l: 'Melbourne', c: 'au', d: '2026-03-06', t: ['09:30', '13:00', '09:30', '13:00', '12:00'], o: F_OFF, track: 'Albert Park Circuit', stats: { len: '5.27 km', turns: 14, rec: '1:15.096 (Lando Norris, 2025)', map: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Albert_Park_Circuit_2021.svg' } },
@@ -118,7 +160,13 @@ function getSessionDate(baseDateStr, offset) {
 
 function renderSchedule(shouldScroll = false) {
     const list = document.getElementById('race-list');
-    let data = CONFIG.series === 'motogp' ? MOTOGP_SCHEDULE : F1_SCHEDULE;
+    let data;
+    switch (CONFIG.series) {
+        case 'moto2': data = MOTO2_SCHEDULE; break;
+        case 'moto3': data = MOTO3_SCHEDULE; break;
+        case 'f1': data = F1_SCHEDULE; break;
+        default: data = MOTOGP_SCHEDULE;
+    }
     const now = new Date();
 
     if (CONFIG.filter === 'upcoming') data = data.filter(r => new Date(r.d) >= now || isRaceWeekendActive(r));
@@ -145,7 +193,12 @@ function renderSchedule(shouldScroll = false) {
         // Add click event to open modal
         div.addEventListener('click', () => openModal(r));
 
-        const sessions = CONFIG.series === 'motogp' ? MOTOGP_SESSIONS : (r.s ? F1_SPRINT_SESSIONS : F1_SESSIONS);
+        let sessions;
+        if (CONFIG.series === 'f1') sessions = r.s ? F1_SPRINT_SESSIONS : F1_SESSIONS;
+        else if (CONFIG.series === 'moto2') sessions = MOTO2_SESSIONS;
+        else if (CONFIG.series === 'moto3') sessions = MOTO3_SESSIONS;
+        else sessions = MOTOGP_SESSIONS;
+
         let sHtml = '';
         sessions.forEach((sName, sIdx) => {
             const time = r.t[sIdx];
@@ -249,7 +302,13 @@ function isRaceWeekendActive(r) {
 
 function updateNextRaceCountdown() {
     if (timerInterval) clearInterval(timerInterval);
-    const data = CONFIG.series === 'motogp' ? MOTOGP_SCHEDULE : F1_SCHEDULE;
+    let data;
+    switch (CONFIG.series) {
+        case 'moto2': data = MOTO2_SCHEDULE; break;
+        case 'moto3': data = MOTO3_SCHEDULE; break;
+        case 'f1': data = F1_SCHEDULE; break;
+        default: data = MOTOGP_SCHEDULE;
+    }
     const now = new Date();
     let nr = data.find(r => { const rd = new Date(r.d); rd.setDate(rd.getDate() + 2); return rd > now; });
     if (!nr) { document.getElementById('next-race-name').innerText = "賽季已結束"; document.getElementById('countdown-timer').style.display = 'none'; return; }
