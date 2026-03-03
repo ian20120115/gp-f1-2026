@@ -73,18 +73,32 @@ function generateSubSeries(base, type) {
     };
 
     return base.map(r => {
-        const newTimes = r.t.map(time => {
+        const newTimes = r.t.map((time, tIdx) => {
             if (!time) return time;
             const [h, m] = time.split(':').map(Number);
             let totalMin = h * 60 + m + offsetMin;
-            if (totalMin < 0) totalMin += 1440;
-            return `${String(Math.floor(totalMin / 60) % 24).padStart(2, '0')}:${String(totalMin % 60).padStart(2, '0')}`;
+
+            // 處理跨日問題
+            const dayShift = Math.floor(totalMin / 1440);
+            totalMin = ((totalMin % 1440) + 1440) % 1440;
+
+            // 如果偏移導致換天，更新 offset (o)
+            const currentOffset = r.o[tIdx];
+            // 這裡我們直接在生成時把 offset 算進去，或者在 render 時處理。
+            // 為了保持穩定，我們這裡只處理時間字串，並確保 offset 對齊。
+
+            return `${String(Math.floor(totalMin / 60)).padStart(2, '0')}:${String(totalMin % 60).padStart(2, '0')}`;
         });
         const filteredTimes = [...newTimes];
         filteredTimes.splice(5, 1); // 移除 Sprint
 
         const subRec = (records[type] && records[type][r.n]) || 'Qualifying Record TBD';
-        return { ...r, t: filteredTimes, o: M23_OFF, stats: { ...r.stats, rec: subRec } };
+        return {
+            ...r,
+            t: filteredTimes,
+            o: M23_OFF,
+            stats: { ...r.stats, rec: subRec } // 確保 stats 是新對象，防止被 MotoGP 蓋掉
+        };
     });
 }
 
