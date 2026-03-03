@@ -1,7 +1,8 @@
-1; const CONFIG = {
+const CONFIG = {
     timezone: 'Asia/Taipei',
     series: localStorage.getItem('gp_series') || 'motogp',
-    filter: 'all'
+    filter: 'all',
+    view: 'schedule' // 'schedule' or 'drivers'
 };
 
 const MOTOGP_SESSIONS = ["FP1", "Practice", "FP2", "Q1", "Q2", "Sprint", "Race"];
@@ -106,6 +107,7 @@ const MOTO2_SCHEDULE = generateSubSeries(MOTOGP_SCHEDULE, 'moto2');
 const MOTO3_SCHEDULE = generateSubSeries(MOTOGP_SCHEDULE, 'moto3');
 
 const F1_SCHEDULE = [
+    // ... (保持原樣)
     { n: '澳洲', l: 'Melbourne', c: 'au', d: '2026-03-06', t: ['09:30', '13:00', '09:30', '13:00', '12:00'], o: F_OFF, track: 'Albert Park Circuit', tags: ['半街道賽', '高速流暢'], stats: { len: '5.27 km', turns: 14, rec: '1:15.096 (Lando Norris, 2025)', map: 'https://upload.wikimedia.org/wikipedia/commons/2/2a/Albert_Park_Circuit_2021.svg' } },
     { n: '中國 (Sprint)', l: 'Shanghai', c: 'cn', d: '2026-03-13', t: ['11:30', '15:30', '11:00', '15:00', '15:00'], s: true, o: FS_OFF, track: 'Shanghai International Circuit', tags: ['極長直線', '輪胎負荷大'], stats: { len: '5.45 km', turns: 16, rec: '1:30.641 (Oscar Piastri, 2025)', map: 'https://upload.wikimedia.org/wikipedia/commons/1/14/Shanghai_International_Circuit-2005.svg' } },
     { n: '日本', l: 'Suzuka', c: 'jp', d: '2026-03-27', t: ['10:30', '14:00', '10:30', '14:00', '13:00'], o: F_OFF, track: 'Suzuka Circuit', tags: ['8字型', '技術巔峰', '傳奇賽道'], stats: { len: '5.80 km', turns: 18, rec: '1:26.983 (Max Verstappen, 2025)', map: 'https://upload.wikimedia.org/wikipedia/commons/e/ec/Suzuka_circuit_map--2005.svg' } },
@@ -132,6 +134,84 @@ const F1_SCHEDULE = [
     { n: '阿布達比', l: 'Yas Marina', c: 'ae', d: '2026-12-04', t: ['17:30', '21:00', '18:30', '22:00', '21:00'], o: F_OFF, track: 'Yas Marina Circuit', tags: ['幕色戰', '極奢設施'], stats: { len: '5.28 km', turns: 16, rec: '1:22.109 (Max Verstappen, 2021)', map: 'https://upload.wikimedia.org/wikipedia/commons/a/a2/Yas_Marina_Circuit_2021.svg' } }
 ];
 
+const MOTOGP_DRIVERS = [
+    {
+        team: 'Ducati Lenovo Team',
+        color: '#e10600',
+        drivers: [
+            { name: 'Marc Márquez', no: '93', nat: 'es', bio: '八屆世界冠軍，2026 年加入 Ducati 廠隊與 Bagnaia 組成夢幻隊伍。' },
+            { name: 'Francesco Bagnaia', no: '63', nat: 'it', bio: '兩屆 MotoGP 冠軍，Ducati 的領軍人物，尋求重奪王者寶座。' }
+        ]
+    },
+    {
+        team: 'Aprilia Racing',
+        color: '#000000',
+        drivers: [
+            { name: 'Jorge Martín', no: '89', nat: 'es', bio: '2024 世界冠軍，2026 年效力於 Aprilia，目標捍衛冠軍。' },
+            { name: 'Marco Bezzecchi', no: '72', nat: 'it', bio: '從 VR46 升格至廠隊，極具侵略性的天才車手。' }
+        ]
+    },
+    {
+        team: 'Red Bull KTM Factory Racing',
+        color: '#ff6600',
+        drivers: [
+            { name: 'Pedro Acosta', no: '31', nat: 'es', bio: '「鯊魚小子」，近年來最強的新人天才，正式領軍 KTM 廠隊。' },
+            { name: 'Brad Binder', no: '33', nat: 'za', bio: 'KTM 的基石車手，以強大的正賽表現與超車火熱著稱。' }
+        ]
+    },
+    {
+        team: 'Monster Energy Yamaha MotoGP',
+        color: '#0000ff',
+        drivers: [
+            { name: 'Fabio Quartararo', no: '20', nat: 'fr', bio: '「暗黑魔王」，帶領山葉進行艱難的復興之路。' },
+            { name: 'Alex Rins', no: '42', nat: 'es', bio: '具備頂尖技術經驗的車手，與 Quartararo 共擔研發重任。' }
+        ]
+    }
+];
+
+const F1_DRIVERS = [
+    {
+        team: 'Ferrari',
+        color: '#ff2800',
+        drivers: [
+            { name: 'Lewis Hamilton', no: '44', nat: 'gb', bio: '七屆世界冠軍，2025 年轉投法拉利，力求在紅軍奪下第八冠。' },
+            { name: 'Charles Leclerc', no: '16', nat: 'mc', bio: '「摩納哥王子」，法拉利的當家車手，與 Hamilton 組成最強陣容。' }
+        ]
+    },
+    {
+        team: 'Red Bull Racing',
+        color: '#0600ef',
+        drivers: [
+            { name: 'Max Verstappen', no: '1', nat: 'nl', bio: '當前 F1 主宰者，尋求在新規則前建立屬於自己的傳奇時代。' },
+            { name: 'Isack Hadjar', no: 'TBD', nat: 'fr', bio: '紅牛青訓出身的新星，2026 年獲得提拔與 Verstappen 搭檔。' }
+        ]
+    },
+    {
+        team: 'Mercedes-AMG PETRONAS',
+        color: '#00a19c',
+        drivers: [
+            { name: 'George Russell', no: '63', nat: 'gb', bio: '賓士車隊的新領袖，具備精準的單圈實力。' },
+            { name: 'Kimi Antonelli', no: '12', nat: 'it', bio: '備受期待的義大利神童，接替 Hamilton 位子的超級新人。' }
+        ]
+    },
+    {
+        team: 'McLaren',
+        color: '#ff8700',
+        drivers: [
+            { name: 'Lando Norris', no: '4', nat: 'gb', bio: '麥拉倫的核心，目前最能威脅 Verstappen 的挑戰者之一。' },
+            { name: 'Oscar Piastri', no: '81', nat: 'au', bio: '極致冷靜的技術流車手，生涯初期就展現出冠軍潛質。' }
+        ]
+    },
+    {
+        team: 'Cadillac (New)',
+        color: '#ffffff',
+        drivers: [
+            { name: 'Valtteri Bottas', no: '77', nat: 'fi', bio: '老大哥級車手，帶領新加入的凱迪拉克車隊奠定基礎。' },
+            { name: 'Sergio Perez', no: '11', nat: 'mx', bio: '極具經驗的保胎大師，與 Bottas 為新車隊提供穩定表現。' }
+        ]
+    }
+];
+
 let timerInterval;
 document.addEventListener('DOMContentLoaded', initApp);
 
@@ -149,14 +229,22 @@ function setupEventListeners() {
         e.target.classList.add('active');
         CONFIG.series = e.target.dataset.series;
         localStorage.setItem('gp_series', CONFIG.series);
-        renderSchedule(true);
-        updateNextRaceCountdown();
+        refreshView();
     }));
+
     document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', (e) => {
         document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
         e.target.classList.add('active');
         CONFIG.filter = e.target.dataset.filter;
-        renderSchedule(false);
+        refreshView();
+    }));
+
+    document.querySelectorAll('.view-btn').forEach(btn => btn.addEventListener('click', (e) => {
+        document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
+        const target = e.target.closest('.view-btn');
+        target.classList.add('active');
+        CONFIG.view = target.dataset.view;
+        refreshView();
     }));
 
     // Modal Close logic
@@ -164,6 +252,17 @@ function setupEventListeners() {
     window.addEventListener('click', (e) => {
         if (e.target.id === 'track-modal') closeModal();
     });
+}
+
+function refreshView() {
+    if (CONFIG.view === 'schedule') {
+        document.querySelector('.tabs').style.display = 'flex';
+        renderSchedule(true);
+        updateNextRaceCountdown();
+    } else {
+        document.querySelector('.tabs').style.display = 'none';
+        renderDrivers();
+    }
 }
 
 function getSessionDate(baseDateStr, offset) {
@@ -341,4 +440,55 @@ function updateNextRaceCountdown() {
         document.getElementById('seconds').innerText = String(Math.floor((diff % 60000) / 1000)).padStart(2, '0');
     }
     timerInterval = setInterval(update, 1000); update();
+}
+function refreshView() {
+    if (CONFIG.view === 'schedule') {
+        document.querySelector('.tabs').style.display = 'flex';
+        renderSchedule(true);
+        updateNextRaceCountdown();
+    } else {
+        document.querySelector('.tabs').style.display = 'none';
+        renderDrivers();
+    }
+}
+
+function renderDrivers() {
+    const list = document.getElementById('race-list');
+    const drivers = CONFIG.series === 'f1' ? F1_DRIVERS : MOTOGP_DRIVERS;
+    list.innerHTML = '';
+
+    if (CONFIG.series === 'moto2' || CONFIG.series === 'moto3') {
+        list.innerHTML = `<div class="loader">${CONFIG.series.toUpperCase()} 車手數據更新中...</div>`;
+        return;
+    }
+
+    drivers.forEach((teamData, tIdx) => {
+        const teamDiv = document.createElement('div');
+        teamDiv.className = 'team-group animate-in';
+        teamDiv.style.animationDelay = `${tIdx * 0.1}s`;
+
+        let driverCards = '';
+        teamData.drivers.forEach(d => {
+            driverCards += `
+                <div class="driver-card">
+                    <div class="driver-header">
+                        <span class="driver-no" style="color: ${teamData.color}">${d.no}</span>
+                        <img src="https://flagcdn.com/w40/${d.nat}.png" alt="${d.nat}" class="driver-flag">
+                    </div>
+                    <div class="driver-info">
+                        <h4>${d.name}</h4>
+                        <p class="driver-bio">${d.bio}</p>
+                    </div>
+                </div>
+            `;
+        });
+
+        teamDiv.innerHTML = `
+            <div class="team-header" style="border-left: 4px solid ${teamData.color}">
+                <h3>${teamData.team}</h3>
+            </div>
+            <div class="drivers-grid">${driverCards}</div>
+        `;
+        list.appendChild(teamDiv);
+    });
 }
